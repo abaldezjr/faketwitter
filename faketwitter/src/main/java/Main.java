@@ -1,122 +1,137 @@
-import java.util.List;
 import java.util.Scanner;
 
 import model.dao.UsuarioDao;
 import model.entity.Usuario;
+import view.PostagemCRUD;
+import view.UsuarioCRUD;
 
 public class Main {
-	
+	  
 	private static Scanner teclado = new Scanner(System.in);
-    
-    private static void menu(){
+	private static Usuario logado;
+	 
+	private static void home(){
         System.out.println("-----------------------------");
-        System.out.println("         MENU USUARIO        ");
+        System.out.println("         TELA INICIAL        ");
         System.out.println("-----------------------------");
-        System.out.println("Digite a opção para começar:");
-        System.out.println("1- Adicionar usuario");
-        System.out.println("2- Atualizar usuario");
-        System.out.println("3- Listar todos usuarios");
-        System.out.println("4- Buscar usuario por email");
-        System.out.println("5- Deletar");
-        System.out.println("0- Sair");
+        System.out.println("1 - Logar");
+        System.out.println("0 - Sair");
         System.out.println("-----------------------------");
+        System.out.print(" -> ");
     }
-    
-    private static void executarMenu(int opcao){
-        switch(opcao){
-            case 1:adicionar();break;
-            case 2:atualizar();break;
-            case 3:listarUsuarios();break;
-            case 4:listarUsuariosPorEmail();break;
-            case 5:remover();break;
-        }
-    }
-   
-    public static void adicionar(){
+	
+	private static void menuLogin(){
         System.out.println("-----------------------------");
-        System.out.println("      ADICIONAR USUARIO      ");
+        System.out.println("         TELA LOGIN          ");
         System.out.println("-----------------------------");
-        Usuario usuario = new Usuario();
-        System.out.print("Email -> ");
-        usuario.setEmail(teclado.nextLine());
-        System.out.print("Senha -> ");
-        usuario.setSenha(teclado.nextLine());
-        System.out.print("Nome -> ");
-        usuario.setNome(teclado.nextLine());
-        UsuarioDao.save(usuario);
-        System.out.println("Usuario adicionado com sucesso.");
-    }
-    
-    public static void remover(){
-        System.out.println("Selecione um dos usuarios abaixo para deletar:"); 
-        List<Usuario> usuarios = listarUsuarios();
-        int index = Integer.parseInt(teclado.nextLine());
-        System.out.println("Tem certeza S/N?");
-        String op = teclado.nextLine();
-        if(op.startsWith("s")){
-            UsuarioDao.delete(usuarios.get(index));
-        }
-    }
-    
-    public static void atualizar(){
-        System.out.println("Selecione um dos usuarios abaixo parar atualizar:");
-        List<Usuario> usuarios = listarUsuarios();
-        Usuario usuario = usuarios.get(Integer.parseInt(teclado.nextLine()));
-        System.out.println("-----------------------------");
-        System.out.println("      ATUALIZAR USUARIO      ");
-        System.out.println("(Deixe o campo vazio para    ");
-        System.out.println("manter o antigo)              ");
-        System.out.println("-----------------------------");
-        System.out.print("Novo email -> ");
+        System.out.print("Email:");
         String email = teclado.nextLine();
-        if(!email.isEmpty())usuario.setEmail(email);
-        System.out.print("Nova senha -> ");
+        System.out.print("Senha:");
         String senha = teclado.nextLine();
-        if(!senha.isEmpty())usuario.setSenha(senha);
-        System.out.print("Novo nome -> ");
-        String nome = teclado.nextLine();
-        if(!nome.isEmpty())usuario.setEmail(nome);
-        UsuarioDao.update(usuario);
-        System.out.println("Usuario atualizado com sucesso.");
-    }
-    
-    public static List<Usuario> listarUsuarios(){
-       List<Usuario> usuarios = UsuarioDao.selectAll();
-       for(int i=0;i<usuarios.size();i++){
-           Usuario u = usuarios.get(i);
-           System.out.println(i+" -> (EMAIL: "+u.getEmail()+" SENHA: "+u.getSenha()+" NOME: "+u.getNome()+" )");
-       }
-       return usuarios;
-    }
-    
-    public static void listarUsuariosPorEmail(){
         System.out.println("-----------------------------");
-        System.out.println("  BUSCAR USUARIO POR EMAIL   ");
-        System.out.println("-----------------------------");
-        System.out.print("email -> ");
-        String email =teclado.nextLine();
-       List<Usuario> usuarios = UsuarioDao.searchToEmail(email);
-       if(usuarios.isEmpty()){
-           System.out.println("Não encontrado.");
-       }else{
-        for(int i=0;i<usuarios.size();i++){
-            Usuario u = usuarios.get(i);
-            System.out.println(i+" -> (EMAIL: "+u.getEmail()+" SENHA: "+u.getSenha()+" NOME: "+u.getNome()+" )");
+        if(!email.isEmpty() && !senha.isEmpty()){
+            Usuario usuario = UsuarioDao.searchToEqualsEmail(email);
+            if(usuario.getEmail().equals(usuario.getEmail()) && senha.equals(usuario.getSenha())){
+                logado = usuario;
+                System.out.println("Seja bem vindo(a)"+logado.getNome());
+            }
+            if(logado.getEmail().equals("admin@gmail.com")){
+                menuAdmin();
+            }else{
+                menuPostagens();
+            }
+        }else{
+            System.out.println("Digite email e senha.");
         }
-       }
     }
-
-    public static void main(String[] args) {
-    	int op = 0;
-        while(true){
-            menu();
+	
+	private static void menuAdmin(){
+        int op = -1;
+        while(op!=0){
+            System.out.println("-----------------------------");
+            System.out.println("       ADMINISTRAÇÃO         ");
+            System.out.println("-----------------------------");
+            System.out.println("1 - Usuarios                 ");
+            System.out.println("2 - Postagens                ");
+            System.out.println("0 - Sair                     ");
+            System.out.println("-----------------------------");
             System.out.print(" -> ");
             op = Integer.parseInt(teclado.nextLine());
+            switch(op){
+                case 1:menuUsuarios();break;
+                case 2:menuPostagens();break;
+            }
+        }
+    }
+	
+	private static void menuUsuarios(){
+        int op = -1;
+        while(op!=0){
+            System.out.println("-----------------------------");
+            System.out.println("         MENU USUARIO        ");
+            System.out.println("-----------------------------");
+            System.out.println("Digite a opção para começar:");
+            System.out.println("1- Adicionar usuario");
+            System.out.println("2- Atualizar usuario");
+            System.out.println("3- Listar todos usuarios");
+            System.out.println("4- Buscar usuario por id");
+            System.out.println("5- Buscar usuario por email");
+            System.out.println("6- Remover usuario");
+            System.out.println("0- Voltar");
+            System.out.println("-----------------------------");
+            System.out.print(" -> ");
+            op = Integer.parseInt(teclado.nextLine());
+            switch(op){
+                case 1:UsuarioCRUD.adicionar();break;
+                case 2:UsuarioCRUD.atualizar();break;
+                case 3:UsuarioCRUD.listarUsuarios();break;
+                case 4:UsuarioCRUD.listarUsuariosPorId();break;
+                case 5:UsuarioCRUD.listarUsuariosPorEmail();break;
+                case 6:UsuarioCRUD.remover();break;
+            }
+        }
+    }
+	
+	private static void menuPostagens(){
+        int op = -1;
+        while(op!=0){
+        System.out.println("-----------------------------");
+        System.out.println("         MENU POSTAGENS      ");
+        System.out.println("-----------------------------");
+        System.out.println("Digite a opção para começar:");
+        System.out.println("1- Adicionar postagem");
+        System.out.println("2- Atualizar postagem");
+        System.out.println("3- Listar todas postagens");
+        System.out.println("4- Buscar postagem por usuario");
+        System.out.println("5- Deletar postagem");
+        System.out.println("0- Voltar");
+        System.out.println("-----------------------------");
+        System.out.print(" -> ");
+        op = Integer.parseInt(teclado.nextLine());
+            switch(op){
+                case 1:PostagemCRUD.adicionar(logado);break;
+                case 2:PostagemCRUD.atualizar(logado);break;
+                case 3:PostagemCRUD.listarPostagens();break;
+                case 4:PostagemCRUD.listarMinhasPostagens(logado);break;
+                case 5:PostagemCRUD.remover(logado);break;
+            }
+        }
+    }
+	
+    public static void main(String[] args) {
+    	
+    	int op = 0;
+        while(true){
+            home();
+            op = Integer.parseInt(teclado.nextLine());
+            if(op == 1){
+                menuLogin();
+            }
             if(op == 0){
                 System.out.println("Saindo do sistema.");
                 break;
             }
-            executarMenu(op);
         }
+    
     }
 }

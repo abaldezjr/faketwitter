@@ -13,7 +13,7 @@ public class UsuarioDao {
     
 
 	public static void save(Usuario usuario){
-        String sql = "insert into usuarios(email,senha,nome) values (?,?,?)";
+        String sql = "INSERT INTO usuarios(email,senha,nome) VALUES (?,?,?)";
         
         try(Connection connection = ConexaoFactory.getConexao();
             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
@@ -22,7 +22,7 @@ public class UsuarioDao {
             preparedStatement.setString(3, usuario.getNome());
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            ex.getMessage();
+            System.out.println(ex.getMessage());
         }
     }
    
@@ -103,6 +103,52 @@ public class UsuarioDao {
             System.out.println(ex.getMessage());
         }
         return usuarios;
-    }    
+    }  
+    
+    public static Usuario searchToEqualsEmail(String email){
+        String sql = "SELECT id,email,senha,nome FROM usuarios WHERE email = ?";
+         
+         Usuario usuario = null;
+         try(Connection connection = ConexaoFactory.getConexao();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+             preparedStatement.setString(1,email);
+             ResultSet resultSet = preparedStatement.executeQuery();
+             if(resultSet.next()){
+                 usuario = new Usuario(
+                         resultSet.getLong("id"),
+                         resultSet.getString("email"),
+                         resultSet.getString("senha"),
+                         resultSet.getString("nome")
+                 );
+             }
+             ConexaoFactory.fechar(resultSet);
+         } catch (SQLException ex) {
+             System.out.println(ex.getMessage());
+         }
+         return usuario;
+     }
+     
+     public static Usuario searchToId(Long id){
+         String sql = "SELECT id,email,senha,nome FROM usuarios WHERE id = ?";
+         
+         Usuario usuario = null;
+         try(Connection connection = ConexaoFactory.getConexao();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+             preparedStatement.setLong(1,id);
+             ResultSet resultSet = preparedStatement.executeQuery();
+             if(resultSet.next()){
+                 usuario = new Usuario(
+                         resultSet.getLong("id"),
+                         resultSet.getString("email"),
+                         resultSet.getString("senha"),
+                         resultSet.getString("nome")
+                 );
+             }
+             ConexaoFactory.fechar(resultSet);
+         } catch (SQLException ex) {
+             ex.getMessage();
+         }
+         return usuario;
+     }
     
 }
