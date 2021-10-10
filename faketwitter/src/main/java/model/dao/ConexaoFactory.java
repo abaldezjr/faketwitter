@@ -9,49 +9,60 @@ import java.sql.Statement;
 
 public class ConexaoFactory {
     
-    private Connection connection;
-    private Statement statement;
-    private PreparedStatement preparedStatement;
-    private ResultSet resultSet;
-    private DriverManager driverManager;
-    
     private static final String URL = "jdbc:mysql://localhost/faketwitter?useSSL=false";
     private static final String USUARIO = "root";
     private static final String SENHA = "ludovic";
     
     public static Connection getConexao(){
-            try {
-				return DriverManager.getConnection(URL,USUARIO,SENHA);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;    
+        try {
+            return DriverManager.getConnection(URL,USUARIO,SENHA);
+        } catch (SQLException ex) {
+            ex.getMessage();
+        }
+        return null;
     }
     
-    public static void fechar(Connection connection){
+    public static boolean fechar(Statement statement) {
+        if (statement == null) return false;
         try {
-            if(connection != null){
-                if(!connection.isClosed()){
-                    connection.close();
-                }
-            }
-        } catch (SQLException ex) {
-             System.out.println("erro:"+ex.getMessage());
+            statement.close();
+            return true;
+        } catch (SQLException e) {
+            e.getMessage();
+            return false;
         }
     }
-    
-    public static void fechar(Connection connection,Statement statement){
+
+    public static boolean fechar(Connection connection) {
+        if (connection == null) return false;
+        try {
+            connection.close();
+            return true;
+        } catch (SQLException e) {
+            e.getMessage();
+            return false;
+        }
+    }
+
+    public static boolean fechar(ResultSet resultSet) {
+        if (resultSet == null) return false;
+        try {
+            resultSet.close();
+            return true;
+        } catch (SQLException e) {
+            e.getMessage();
+            return false;
+        }
+    }
+
+    public static void fechar(Connection connection,Statement statement) {
+        fechar(statement);
         fechar(connection);
-        try {
-            if(statement != null){
-                if(!statement.isClosed()){
-                    statement.close();
-                }
-            }
-        } catch (SQLException ex) {
-             System.out.println("erro:"+ex.getMessage());
-        }
+    }
+
+    public static void fechar(Connection connection,Statement statement, ResultSet resultSet) {
+            fechar(resultSet);
+            fechar(connection,statement);
     }
     
 }

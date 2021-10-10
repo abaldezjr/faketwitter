@@ -1,10 +1,9 @@
 package model.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,73 +11,58 @@ import model.entity.Usuario;
 
 public class UsuarioDao {
     
-    
-    /*--------------------------------------------------
-        ADICIONAR USUARIO COM STATEMENT
-    ----------------------------------------------------*/
-    public static void save(Usuario usuario){
-        String sql = "insert into usuarios(email,senha,nome) values ('"+usuario.getEmail()+"','"+usuario.getSenha()+"','"+usuario.getNome()+"')";
-        Connection connection = ConexaoFactory.getConexao();
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(sql);
-            ConexaoFactory.fechar(connection,statement);
+
+	public static void save(Usuario usuario){
+        String sql = "insert into usuarios(email,senha,nome) values (?,?,?)";
+        
+        try(Connection connection = ConexaoFactory.getConexao();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setString(1, usuario.getEmail());
+            preparedStatement.setString(2, usuario.getSenha());
+            preparedStatement.setString(3, usuario.getNome());
+            preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
+            ex.getMessage();
         }
     }
    
-     /*--------------------------------------------------
-        REMOVER USUARIO COM STATEMENT
-    ----------------------------------------------------*/
     public static void delete(Usuario usuario){
-        if(usuario == null){
-            System.out.println("Não foi possível remover o registro.");
-            return;
-        }
-        String sql = "DELETE FROM usuarios WHERE id='"+usuario.getId()+"'";
-        Connection connection = ConexaoFactory.getConexao();
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(sql);
-            ConexaoFactory.fechar(connection,statement);
-            System.out.println("Registro removido com sucesso.");
+        if(usuario==null)return;
+        String sql = "DELETE FROM usuarios WHERE id = ?";
+        
+        try(Connection connection = ConexaoFactory.getConexao();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setLong(1, usuario.getId());
+            preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
+            ex.getMessage();
         }
     }
     
-     /*--------------------------------------------------
-        ATUALIZAR USUARIO COM STATEMENT
-    ----------------------------------------------------*/
     public static void update(Usuario usuario){
-        if(usuario == null){
-            System.out.println("Não foi possível atualizar o registro.");
-            return;
-        }
-        String sql = "UPDATE usuarios SET email='"+usuario.getEmail()+"', senha='"+usuario.getSenha()+"', nome='"+usuario.getNome()+"' WHERE id='"+usuario.getId()+"';";
-        Connection connection = ConexaoFactory.getConexao();
-        try {
-            Statement statement = connection.createStatement();
-            statement.executeUpdate(sql);
-            ConexaoFactory.fechar(connection,statement);
-            System.out.println("Registro atualizado com sucesso.");
+        if(usuario==null) return;
+         String sql = "UPDATE usuarios SET email=?, senha=?, nome=? WHERE id=?";
+        
+        try (Connection connection = ConexaoFactory.getConexao();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+            preparedStatement.setString(1, usuario.getEmail());
+            preparedStatement.setString(2, usuario.getSenha());
+            preparedStatement.setString(3, usuario.getNome());
+            preparedStatement.setLong(4, usuario.getId());
+            preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
+            ex.getMessage();
         }
     }
     
-     /*--------------------------------------------------
-        SELECIONAR TODOS USUARIOS COM STATEMENT E RESULTSET
-    ----------------------------------------------------*/
     public static List<Usuario> selectAll(){
         String sql = "SELECT id,email,senha,nome FROM usuarios";
-        Connection connection = ConexaoFactory.getConexao();
-         List<Usuario> usuarios = null;
-        try {
+        List<Usuario> usuarios = null;
+         
+        try(Connection connection = ConexaoFactory.getConexao();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery(sql);){
             usuarios = new ArrayList<Usuario>();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
             while(resultSet.next()){
                 usuarios.add(
                     new Usuario(
@@ -89,24 +73,21 @@ public class UsuarioDao {
                     )
                 );
             }
-            ConexaoFactory.fechar(connection,statement);
         } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
+            ex.getMessage();
         }
         return usuarios;
     }
     
-     /*-----------------------------------------------------------
-        SELECIONAR USUARIOS POR LOGIN USANDO STATEMENT E RESULTSET
-    --------------------------------------------------------------*/
-    public static List<Usuario> searchToLogin(String nome){
-        String sql = "SELECT id,email,senha,nome FROM usuarios WHERE nome like '%"+nome+"%'";
-        Connection connection = ConexaoFactory.getConexao();
-         List<Usuario> usuarios = null;
-        try {
+    public static List<Usuario> searchToEmail(String email){
+        String sql = "SELECT id,email,senha,nome FROM usuarios WHERE email like ?";
+        
+        List<Usuario> usuarios = null;
+        try(Connection connection = ConexaoFactory.getConexao();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);){
             usuarios = new ArrayList<Usuario>();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            preparedStatement.setString(1,"%"+email+"%");
+            ResultSet resultSet = preparedStatement.executeQuery();
             while(resultSet.next()){
                 usuarios.add(
                     new Usuario(
@@ -117,48 +98,11 @@ public class UsuarioDao {
                     )
                 );
             }
-            ConexaoFactory.fechar(connection,statement);
+            ConexaoFactory.fechar(resultSet);
         } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
+            System.out.println(ex.getMessage());
         }
         return usuarios;
-    }
-    
-     /*--------------------------------------------------
-        USANDO META DADOS
-    ----------------------------------------------------*/
-    public static void metaDados(){
-        String sql = "SELECT * FROM usuarios";
-        Connection connection = ConexaoFactory.getConexao();
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            
-            resultSet.next();
-            for(int i=1;i<=metaData.getColumnCount();i++){
-                System.out.println("tabela="+metaData.getTableName(i)
-                        +" coluna="+metaData.getColumnName(i)
-                        +" tipo="+metaData.getColumnTypeName(i)
-                        +" catalog="+metaData.getCatalogName(i));
-            }
-            ConexaoFactory.fechar(connection,statement);
-        } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
-        }
-    }
-    
-     public static void saveTransaction(){
-        Connection connection = ConexaoFactory.getConexao();
-        try {
-            connection.setAutoCommit(false);
-            Statement statement = connection.createStatement();
-            connection.commit();
-            ConexaoFactory.fechar(connection,statement);
-        } catch (SQLException ex) {
-            System.out.println("erro:"+ex.getMessage());
-        }
-    }
-    
+    }    
     
 }
