@@ -9,11 +9,13 @@ import model.entity.Usuario;
 
 public class PostagemCRUD {
 
-	private static Scanner teclado = new Scanner(System.in);
+	private UtilidadesView utilidadesView;
+	
 	private PostagemController postagemController;
 	private Usuario usuario;
 
 	public PostagemCRUD() {
+		utilidadesView = new UtilidadesView();
 		postagemController = new PostagemController();
 	}
 
@@ -22,22 +24,11 @@ public class PostagemCRUD {
 	}
 
 	public void menuPostagens() {
+		String[] opcoes = { "Adicionar postagem", "Atualizar postagem", "Remover postagem", "Listar todas postagens",
+				"Listar minhas postagens", "Filtrar postagens por usuario", "Voltar" };
 		int op = -1;
 		do {
-			System.out.println("----------------------------------");
-			System.out.println("         MENU POSTAGENS           ");
-			System.out.println("----------------------------------");
-			System.out.println("Digite a opção para começar:      ");
-			System.out.println("1 - Adicionar postagem            ");
-			System.out.println("2 - Atualizar postagem            ");
-			System.out.println("3 - Remover postagem              ");
-			System.out.println("4 - Listar todas postagens        ");
-			System.out.println("5 - Listar minhas postagens       ");
-			System.out.println("6 - Filtrar postagens por usuario ");
-			System.out.println("0 - Voltar                        ");
-			System.out.println("----------------------------------");
-			System.out.print(" -> ");
-			op = Integer.parseInt(teclado.nextLine());
+			op = utilidadesView.menu("MENU POSTAGENS", opcoes);
 			switch (op) {
 			case 1:
 				adicionar();
@@ -62,17 +53,12 @@ public class PostagemCRUD {
 	}
 
 	public void adicionar() {
-		System.out.println("-----------------------------");
-		System.out.println("     ADICIONAR POSTAGEM      ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("ADICIONAR POSTAGEM");
 		Postagem postagem = new Postagem();
 		postagem.setCriador(usuario);
-		System.out.println("Data de criação -> " + postagem.getCriacao());
-		System.out.print("Titulo -> ");
-		postagem.setTitulo(teclado.nextLine());
-		System.out.print("Mensagem -> ");
-		postagem.setMensagem(teclado.nextLine());
-		System.out.println("-----------------------------");
+		System.out.println("Data de criação:" + postagem.getCriacao());
+		postagem.setTitulo(utilidadesView.leia("Titulo:"));
+		postagem.setMensagem(utilidadesView.leia("Mensagem:"));
 		if (this.postagemController.adicionar(postagem)) {
 			System.out.println("Postagem adicionada com sucesso.");
 		} else {
@@ -81,20 +67,14 @@ public class PostagemCRUD {
 	}
 
 	public void atualizar() {
-		System.out.println("-----------------------------");
-		System.out.println("      ATUALIZAR POSTAGEM     ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("ATUALIZAR POSTAGEM");
 		List<Postagem> postagens = this.postagemController.filtrarPostagemPorUsuario(usuario);
 		listar(postagens);
 		System.out.println("Selecione uma das postagens abaixo parar atualizar:");
-		System.out.println(" -> ");
-		Integer index = Integer.parseInt(teclado.nextLine());
-		Postagem postagem = postagens.get(index);
+		Postagem postagem = postagens.get(Integer.parseInt(utilidadesView.leia(" -> ")));
 		System.out.println("(Deixe o campo vazio para manter o antigo)");
-		System.out.print("Titulo -> ");
-		String titulo = teclado.nextLine();
-		System.out.print("Mensagem -> ");
-		String mensagem = teclado.nextLine();
+		String titulo = utilidadesView.leia("Titulo:");
+		String mensagem = utilidadesView.leia("Mensagem:");
 		if (!titulo.isEmpty())
 			postagem.setTitulo(titulo);
 		if (!mensagem.isEmpty())
@@ -107,18 +87,14 @@ public class PostagemCRUD {
 	}
 
 	public void remover() {
-		System.out.println("-----------------------------");
-		System.out.println("       REMOVER POSTAGEM      ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("REMOVER POSTAGEM");
 		List<Postagem> postagens = this.postagemController.filtrarPostagemPorUsuario(usuario);
 		listar(postagens);
 		System.out.println("Selecione uma das postagens abaixo parar remover:");
-		System.out.println(" -> ");
-		Integer index = Integer.parseInt(teclado.nextLine());
-		System.out.println("Tem certeza S/N?");
-		String op = teclado.nextLine();
+		Postagem postagem = postagens.get(Integer.parseInt(utilidadesView.leia(" -> ")));
+		String op = utilidadesView.leia("Tem certeza S/N?\n -> ");
 		if (op.toUpperCase().startsWith("S")) {
-			if (postagemController.remover(postagens.get(index))) {
+			if (postagemController.remover(postagem)) {
 				System.out.println("Postagem removida com sucesso.");
 			} else {
 				System.out.println("Não foi possível remover a postagem.");
@@ -127,9 +103,7 @@ public class PostagemCRUD {
 	}
 
 	public void listarPostagens() {
-		System.out.println("-----------------------------");
-		System.out.println("       LISTAR POSTAGENS       ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("LISTAR POSTAGENS");
 		listar(this.postagemController.listarTodos());
 	}
 
@@ -146,9 +120,7 @@ public class PostagemCRUD {
 	}
 
 	public void listarMinhasPostagens() {
-		System.out.println("-----------------------------");
-		System.out.println("      MINHAS POSTAGENS       ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("MINHAS POSTAGENS");
 		listar(this.postagemController.filtrarPostagemPorUsuario(usuario));
 	}
 
@@ -162,12 +134,8 @@ public class PostagemCRUD {
 //	}
 
 	public void filtrarPostagensPorLikeUsuarioNome() {
-		System.out.println("-------------------------------");
-		System.out.println(" FILTRAR POSTAGENS POR USUARIO ");
-		System.out.println("-------------------------------");
-		System.out.print("Nome -> ");
-		String nome = teclado.nextLine();
-		listar(this.postagemController.filtrarPostagemPorLikeUsuarioNome(nome));
+		utilidadesView.titulo("FILTRAR POSTAGENS POR USUARIO");
+		listar(this.postagemController.filtrarPostagemPorLikeUsuarioNome(utilidadesView.leia("Nome -> ")));
 	}
 
 }

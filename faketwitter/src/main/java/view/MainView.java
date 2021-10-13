@@ -1,33 +1,26 @@
 package view;
 
-import java.util.Scanner;
-
 import controller.UsuarioController;
 
 public class MainView {
-
-	private Scanner teclado = new Scanner(System.in);
+	
+	private UtilidadesView utilidadesView;
 	private UsuarioController usuarioController;
 	private UsuarioCRUD usuarioCRUD;
 	private PostagemCRUD postagemCRUD;
 	
 	public MainView() {
+		utilidadesView = new UtilidadesView();
 		usuarioController = new UsuarioController();
 		usuarioCRUD = new UsuarioCRUD();
 		postagemCRUD = new PostagemCRUD();
 	}
 
 	public void telaInicial() {
+		String[] opcoes =  {"Logar","Sair"};
 		int op = -1;
 		do {
-			System.out.println("----------------------------------");
-			System.out.println("           TELA INICIAL           ");
-			System.out.println("----------------------------------");
-			System.out.println("1 - Logar                         ");
-			System.out.println("0 - Sair                          ");
-			System.out.println("----------------------------------");
-			System.out.print(" -> ");
-			op = Integer.parseInt(this.teclado.nextLine());
+			op = utilidadesView.menu("TELA INICIAL", opcoes);
 			switch (op) {
 			case 1:
 				menuLogin();
@@ -40,14 +33,9 @@ public class MainView {
 	}
 
 	public void menuLogin() {
-		System.out.println("----------------------------------");
-		System.out.println("           TELA LOGIN             ");
-		System.out.println("----------------------------------");
-		System.out.print("Email:");
-		String email = teclado.nextLine();
-		System.out.print("Senha:");
-		String senha = teclado.nextLine();
-		System.out.println("----------------------------------");
+		utilidadesView.titulo("TELA LOGIN");
+		String email = utilidadesView.leia("Email:");
+		String senha = utilidadesView.leia("Senha:");
 		if (this.usuarioController.validaLogin(email, senha)) {
 			this.postagemCRUD.setUsuario(this.usuarioController.getLogado());
 			if (this.usuarioController.ehAdmin()) {
@@ -59,17 +47,10 @@ public class MainView {
 	}
 
 	public void menuAdmin() {
+		String[] opcoes =  {"Usuarios","Postagens","Sair"};
 		int op = -1;
 		do {
-			System.out.println("----------------------------------");
-			System.out.println("       ADMINISTRAÇÃO              ");
-			System.out.println("----------------------------------");
-			System.out.println("1 - Usuarios                      ");
-			System.out.println("2 - Postagens                     ");
-			System.out.println("0 - Sair                          ");
-			System.out.println("----------------------------------");
-			System.out.print(" -> ");
-			op = Integer.parseInt(teclado.nextLine());
+			op = utilidadesView.menu("ADMINISTRAÇÃO", opcoes);
 			switch (op) {
 			case 1:
 				this.usuarioCRUD.menuUsuarios();

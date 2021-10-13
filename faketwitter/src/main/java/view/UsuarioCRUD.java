@@ -8,30 +8,20 @@ import model.entity.Usuario;
 
 public class UsuarioCRUD {
 
-	private static Scanner teclado = new Scanner(System.in);
+	private UtilidadesView utilidadesView;
 	private UsuarioController usuarioController;
 
 	public UsuarioCRUD() {
+		utilidadesView = new UtilidadesView();
 		usuarioController = new UsuarioController();
 	}
-	
+
 	public void menuUsuarios() {
+		String[] opcoes = { "Adicionar usuario", "Atualizar usuario", "Remover usuario", "Listar todos usuarios",
+				"Buscar usuario por id", "Buscar usuario por email", "Voltar" };
 		int op = -1;
 		do {
-			System.out.println("----------------------------------");
-			System.out.println("         MENU USUARIOS            ");
-			System.out.println("----------------------------------");
-			System.out.println("Digite a opção para começar:");
-			System.out.println("1- Adicionar usuario");
-			System.out.println("2- Atualizar usuario");
-			System.out.println("3- Remover usuario");
-			System.out.println("4- Listar todos usuarios");
-			System.out.println("5- Buscar usuario por id");
-			System.out.println("6- Buscar usuario por email");
-			System.out.println("0- Voltar");
-			System.out.println("-----------------------------------");
-			System.out.print(" -> ");
-			op = Integer.parseInt(teclado.nextLine());
+			op = utilidadesView.menu("MENU USUARIOS", opcoes);
 			switch (op) {
 			case 1:
 				adicionar();
@@ -56,17 +46,11 @@ public class UsuarioCRUD {
 	}
 
 	public void adicionar() {
-		System.out.println("-----------------------------");
-		System.out.println("      ADICIONAR USUARIO      ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("ADICIONAR USUARIO");
 		Usuario usuario = new Usuario();
-		System.out.print("Email -> ");
-		usuario.setEmail(teclado.nextLine());
-		System.out.print("Senha -> ");
-		usuario.setSenha(teclado.nextLine());
-		System.out.print("Nome -> ");
-		usuario.setNome(teclado.nextLine());
-		System.out.println("-----------------------------");
+		usuario.setEmail(utilidadesView.leia("Email -> "));
+		usuario.setSenha(utilidadesView.leia("Senha -> "));
+		usuario.setNome(utilidadesView.leia("Nome -> "));
 		if (this.usuarioController.adicionar(usuario)) {
 			System.out.println("Usuario adicionado com sucesso.");
 		} else {
@@ -75,24 +59,15 @@ public class UsuarioCRUD {
 	}
 
 	public void atualizar() {
-		System.out.println("-----------------------------");
-		System.out.println("      ATUALIZAR USUARIO      ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("ATUALIZAR USUARIO");
 		List<Usuario> usuarios = this.usuarioController.listarTodos();
 		listar(usuarios);
 		if (!usuarios.isEmpty()) {
-			System.out.println("Selecione um dos usuarios:");
-			System.out.println(" -> ");
-			Integer index = Integer.parseInt(teclado.nextLine());
-			Usuario usuario = usuarios.get(index);
+			Usuario usuario = usuarios.get(Integer.parseInt(utilidadesView.leia("Selecione um dos usuarios:\n -> ")));
 			System.out.println("(Deixe o campo vazio para manter o antigo)");
-			System.out.print("Novo email -> ");
-			String email = teclado.nextLine();
-			System.out.print("Nova senha -> ");
-			String senha = teclado.nextLine();
-			System.out.print("Novo nome -> ");
-			String nome = teclado.nextLine();
-			System.out.println("-----------------------------");
+			String email = utilidadesView.leia("Novo email -> ");
+			String senha = utilidadesView.leia("Nova senha -> ");
+			String nome  = utilidadesView.leia("Novo nome -> ");
 			if (!email.isEmpty())
 				usuario.setEmail(email);
 			if (!senha.isEmpty())
@@ -102,23 +77,19 @@ public class UsuarioCRUD {
 			if (this.usuarioController.atualizar(usuario)) {
 				System.out.println("Usuario atualizado com sucesso.");
 			} else {
+
 				System.out.println("Não foi possível atualizar o usuario.");
 			}
 		}
 	}
 
 	public void remover() {
-		System.out.println("-----------------------------");
-		System.out.println("       REMOVER USUARIO       ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("REMOVER USUARIO");
 		List<Usuario> usuarios = this.usuarioController.listarTodos();
 		listar(usuarios);
 		if (!usuarios.isEmpty()) {
-			System.out.println("Selecione um dos usuarios:");
-			System.out.println(" -> ");
-			Integer index = Integer.parseInt(teclado.nextLine());
-			System.out.println("Tem certeza S/N?");
-			String op = teclado.nextLine();
+			Integer index = Integer.parseInt(utilidadesView.leia("Selecione um dos usuarios:\n -> "));
+			String op = utilidadesView.leia("Tem certeza S/N?");
 			if (op.toUpperCase().startsWith("S")) {
 				if (this.usuarioController.remover(usuarios.get(index))) {
 					System.out.println("Usuario removido com sucesso.");
@@ -130,9 +101,7 @@ public class UsuarioCRUD {
 	}
 
 	public void listarUsuarios() {
-		System.out.println("-----------------------------");
-		System.out.println("       LISTAR USUARIOS       ");
-		System.out.println("-----------------------------");
+		utilidadesView.titulo("LISTAR USUARIOS");
 		listar(this.usuarioController.listarTodos());
 	}
 
@@ -153,12 +122,9 @@ public class UsuarioCRUD {
 	}
 
 	public void filtrarUsuarioPorId() {
-		System.out.println("-----------------------------");
-		System.out.println("  BUSCAR USUARIO POR ID   ");
-		System.out.println("-----------------------------");
-		System.out.print("Id -> ");
-		String id = teclado.nextLine();
-		Usuario usuario = this.usuarioController.filtrarUsuarioPorId(Long.parseLong(id));
+		utilidadesView.titulo("BUSCAR USUARIO POR ID");
+		Long id = Long.parseLong(utilidadesView.leia("Id -> "));
+		Usuario usuario = this.usuarioController.filtrarUsuarioPorId(id);
 		if (usuario == null) {
 			System.out.println("Não encontrado.");
 		} else {
@@ -167,11 +133,8 @@ public class UsuarioCRUD {
 	}
 
 	public void filtrarUsuarioPorLikeEmail() {
-		System.out.println("-----------------------------");
-		System.out.println("  BUSCAR USUARIO POR EMAIL   ");
-		System.out.println("-----------------------------");
-		System.out.print("Email -> ");
-		String email = teclado.nextLine();
+		utilidadesView.titulo("BUSCAR USUARIO POR EMAIL");
+		String email = utilidadesView.leia("Email -> ");
 		listar(this.usuarioController.filtrarPorLikeEmail(email));
 	}
 }
