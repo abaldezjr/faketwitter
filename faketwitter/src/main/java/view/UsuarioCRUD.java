@@ -1,10 +1,9 @@
 package view;
 
 import java.util.List;
-import java.util.Scanner;
 
 import controller.UsuarioController;
-import model.entity.Usuario;
+import dto.UsuarioDto;
 
 public class UsuarioCRUD {
 
@@ -47,11 +46,11 @@ public class UsuarioCRUD {
 
 	public void adicionar() {
 		utilidadesView.titulo("ADICIONAR USUARIO");
-		Usuario usuario = new Usuario();
-		usuario.setEmail(utilidadesView.leia("Email -> "));
-		usuario.setSenha(utilidadesView.leia("Senha -> "));
-		usuario.setNome(utilidadesView.leia("Nome -> "));
-		if (this.usuarioController.adicionar(usuario)) {
+		UsuarioDto usuarioDto = new UsuarioDto();
+		usuarioDto.setEmail(utilidadesView.leia("Email -> "));
+		usuarioDto.setSenha(utilidadesView.leia("Senha -> "));
+		usuarioDto.setNome(utilidadesView.leia("Nome -> "));
+		if (this.usuarioController.adicionar(usuarioDto)) {
 			System.out.println("Usuario adicionado com sucesso.");
 		} else {
 			System.out.println("Não foi possível adicionar o usuario.");
@@ -60,21 +59,21 @@ public class UsuarioCRUD {
 
 	public void atualizar() {
 		utilidadesView.titulo("ATUALIZAR USUARIO");
-		List<Usuario> usuarios = this.usuarioController.listarTodos();
-		listar(usuarios);
-		if (!usuarios.isEmpty()) {
-			Usuario usuario = usuarios.get(Integer.parseInt(utilidadesView.leia("Selecione um dos usuarios:\n -> ")));
+		List<UsuarioDto> usuariosDto = this.usuarioController.listarTodos();
+		listar(usuariosDto);
+		if (!usuariosDto.isEmpty()) {
+			UsuarioDto usuarioDto = usuariosDto.get(Integer.parseInt(utilidadesView.leia("Selecione um dos usuarios:\n -> ")));
 			System.out.println("(Deixe o campo vazio para manter o antigo)");
 			String email = utilidadesView.leia("Novo email -> ");
 			String senha = utilidadesView.leia("Nova senha -> ");
 			String nome  = utilidadesView.leia("Novo nome -> ");
 			if (!email.isEmpty())
-				usuario.setEmail(email);
+				usuarioDto.setEmail(email);
 			if (!senha.isEmpty())
-				usuario.setSenha(senha);
+				usuarioDto.setSenha(senha);
 			if (!nome.isEmpty())
-				usuario.setNome(nome);
-			if (this.usuarioController.atualizar(usuario)) {
+				usuarioDto.setNome(nome);
+			if (this.usuarioController.atualizar(usuarioDto)) {
 				System.out.println("Usuario atualizado com sucesso.");
 			} else {
 
@@ -85,13 +84,13 @@ public class UsuarioCRUD {
 
 	public void remover() {
 		utilidadesView.titulo("REMOVER USUARIO");
-		List<Usuario> usuarios = this.usuarioController.listarTodos();
-		listar(usuarios);
-		if (!usuarios.isEmpty()) {
+		List<UsuarioDto> usuariosDto = this.usuarioController.listarTodos();
+		listar(usuariosDto);
+		if (!usuariosDto.isEmpty()) {
 			Integer index = Integer.parseInt(utilidadesView.leia("Selecione um dos usuarios:\n -> "));
 			String op = utilidadesView.leia("Tem certeza S/N?");
 			if (op.toUpperCase().startsWith("S")) {
-				if (this.usuarioController.remover(usuarios.get(index))) {
+				if (this.usuarioController.remover(usuariosDto.get(index))) {
 					System.out.println("Usuario removido com sucesso.");
 				} else {
 					System.out.println("Não foi possível remover o usuario.");
@@ -105,30 +104,30 @@ public class UsuarioCRUD {
 		listar(this.usuarioController.listarTodos());
 	}
 
-	public void listar(List<Usuario> usuarios) {
-		if (usuarios.isEmpty()) {
+	public void listar(List<UsuarioDto> usuariosDto) {
+		if (usuariosDto.isEmpty()) {
 			System.out.println("Nenhum usuario encontrado.");
 		} else {
-			for (int i = 0; i < usuarios.size(); i++) {
-				Usuario u = usuarios.get(i);
+			for (int i = 0; i < usuariosDto.size(); i++) {
+				UsuarioDto usuarioDto = usuariosDto.get(i);
 				System.out.print(i + " -> ");
-				mostrarUsuario(u);
+				mostrarUsuario(usuarioDto);
 			}
 		}
 	}
 
-	public void mostrarUsuario(Usuario u) {
-		System.out.println("(EMAIL: " + u.getEmail() + " SENHA: " + u.getSenha() + " NOME: " + u.getNome() + " )");
+	public void mostrarUsuario(UsuarioDto usuarioDto) {
+		System.out.println("(EMAIL: " + usuarioDto.getEmail() + " NOME: " + usuarioDto.getNome() + " )");
 	}
 
 	public void filtrarUsuarioPorId() {
 		utilidadesView.titulo("BUSCAR USUARIO POR ID");
 		Long id = Long.parseLong(utilidadesView.leia("Id -> "));
-		Usuario usuario = this.usuarioController.filtrarUsuarioPorId(id);
-		if (usuario == null) {
+		UsuarioDto usuarioDto = this.usuarioController.filtrarUsuarioPorId(id);
+		if (usuarioDto == null) {
 			System.out.println("Não encontrado.");
 		} else {
-			mostrarUsuario(usuario);
+			mostrarUsuario(usuarioDto);
 		}
 	}
 

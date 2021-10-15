@@ -1,26 +1,25 @@
 package view;
 
 import java.util.List;
-import java.util.Scanner;
 
 import controller.PostagemController;
-import model.entity.Postagem;
-import model.entity.Usuario;
+import dto.PostagemDto;
+import dto.UsuarioDto;
 
 public class PostagemCRUD {
 
 	private UtilidadesView utilidadesView;
 	
 	private PostagemController postagemController;
-	private Usuario usuario;
+	private UsuarioDto usuarioDto;
 
 	public PostagemCRUD() {
 		utilidadesView = new UtilidadesView();
 		postagemController = new PostagemController();
 	}
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
+	public void setUsuario(UsuarioDto usuarioDto) {
+		this.usuarioDto = usuarioDto;
 	}
 
 	public void menuPostagens() {
@@ -54,12 +53,12 @@ public class PostagemCRUD {
 
 	public void adicionar() {
 		utilidadesView.titulo("ADICIONAR POSTAGEM");
-		Postagem postagem = new Postagem();
-		postagem.setCriador(usuario);
-		System.out.println("Data de criação:" + postagem.getCriacao());
-		postagem.setTitulo(utilidadesView.leia("Titulo:"));
-		postagem.setMensagem(utilidadesView.leia("Mensagem:"));
-		if (this.postagemController.adicionar(postagem)) {
+		PostagemDto postagemDto = new PostagemDto();
+		postagemDto.setCriador(usuarioDto);
+		System.out.println("Data de criação:" + postagemDto.getCriacao());
+		postagemDto.setTitulo(utilidadesView.leia("Titulo:"));
+		postagemDto.setMensagem(utilidadesView.leia("Mensagem:"));
+		if (this.postagemController.adicionar(postagemDto)) {
 			System.out.println("Postagem adicionada com sucesso.");
 		} else {
 			System.out.println("Não foi possível adicionar a postagem.");
@@ -68,18 +67,18 @@ public class PostagemCRUD {
 
 	public void atualizar() {
 		utilidadesView.titulo("ATUALIZAR POSTAGEM");
-		List<Postagem> postagens = this.postagemController.filtrarPostagemPorUsuario(usuario);
-		listar(postagens);
+		List<PostagemDto> postagensDto = this.postagemController.filtrarPostagemPorUsuario(usuarioDto);
+		listar(postagensDto);
 		System.out.println("Selecione uma das postagens abaixo parar atualizar:");
-		Postagem postagem = postagens.get(Integer.parseInt(utilidadesView.leia(" -> ")));
+		PostagemDto postagemDto = postagensDto.get(Integer.parseInt(utilidadesView.leia(" -> ")));
 		System.out.println("(Deixe o campo vazio para manter o antigo)");
 		String titulo = utilidadesView.leia("Titulo:");
 		String mensagem = utilidadesView.leia("Mensagem:");
 		if (!titulo.isEmpty())
-			postagem.setTitulo(titulo);
+			postagemDto.setTitulo(titulo);
 		if (!mensagem.isEmpty())
-			postagem.setMensagem(mensagem);
-		if (postagemController.atualizar(postagem)) {
+			postagemDto.setMensagem(mensagem);
+		if (postagemController.atualizar(postagemDto)) {
 			System.out.println("Postagem atualizada com sucesso.");
 		} else {
 			System.out.println("Não foi possível atualizar a postagem.");
@@ -88,13 +87,13 @@ public class PostagemCRUD {
 
 	public void remover() {
 		utilidadesView.titulo("REMOVER POSTAGEM");
-		List<Postagem> postagens = this.postagemController.filtrarPostagemPorUsuario(usuario);
-		listar(postagens);
+		List<PostagemDto> postagensDto = this.postagemController.filtrarPostagemPorUsuario(usuarioDto);
+		listar(postagensDto);
 		System.out.println("Selecione uma das postagens abaixo parar remover:");
-		Postagem postagem = postagens.get(Integer.parseInt(utilidadesView.leia(" -> ")));
+		PostagemDto postagemDto = postagensDto.get(Integer.parseInt(utilidadesView.leia(" -> ")));
 		String op = utilidadesView.leia("Tem certeza S/N?\n -> ");
 		if (op.toUpperCase().startsWith("S")) {
-			if (postagemController.remover(postagem)) {
+			if (postagemController.remover(postagemDto)) {
 				System.out.println("Postagem removida com sucesso.");
 			} else {
 				System.out.println("Não foi possível remover a postagem.");
@@ -107,21 +106,21 @@ public class PostagemCRUD {
 		listar(this.postagemController.listarTodos());
 	}
 
-	public void listar(List<Postagem> postagens) {
-		if (postagens.isEmpty()) {
+	public void listar(List<PostagemDto> postagensDto) {
+		if (postagensDto.isEmpty()) {
 			System.out.println("Nenhuma postagem encontrada.");
 		} else {
-			for (int i = 0; i < postagens.size(); i++) {
-				Postagem p = postagens.get(i);
-				System.out.println(i + " -> (TITULO: " + p.getTitulo() + " CRIADOR: " + p.getCriador() + " MENSAGEM: "
-						+ p.getMensagem() + " )");
+			for (int i = 0; i < postagensDto.size(); i++) {
+				PostagemDto postagemDto = postagensDto.get(i);
+				System.out.println(i + " -> (TITULO: " + postagemDto.getTitulo() + " CRIADOR: " + postagemDto.getCriador() + " MENSAGEM: "
+						+ postagemDto.getMensagem() + " )");
 			}
 		}
 	}
 
 	public void listarMinhasPostagens() {
 		utilidadesView.titulo("MINHAS POSTAGENS");
-		listar(this.postagemController.filtrarPostagemPorUsuario(usuario));
+		listar(this.postagemController.filtrarPostagemPorUsuario(usuarioDto));
 	}
 
 //	public void filtrarPorLikeTitulo() {

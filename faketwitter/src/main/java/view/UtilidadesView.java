@@ -8,7 +8,7 @@ public class UtilidadesView {
 
 	public void titulo(String titulo) {
 		System.out.println("----------------------------------");
-		System.out.println("           " + titulo + "           ");
+		System.out.println(titulo);
 		System.out.println("----------------------------------");
 	}
 

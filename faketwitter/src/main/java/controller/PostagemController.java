@@ -2,11 +2,9 @@ package controller;
 
 import java.util.List;
 
-import model.entity.Postagem;
-import model.entity.Usuario;
+import dto.PostagemDto;
+import dto.UsuarioDto;
 import model.service.PostagemService;
-import model.service.UsuarioService;
-import view.PostagemCRUD;
 
 public class PostagemController {
 
@@ -16,7 +14,7 @@ public class PostagemController {
 		postagemGerente = new PostagemService();
 	}
 	
-	public boolean adicionar(Postagem postagem) {
+	public boolean adicionar(PostagemDto postagem) {
 		if (postagemGerente.adicionar(postagem)) {
 			return true;
 		} else {
@@ -24,35 +22,35 @@ public class PostagemController {
 		}
 	}
 
-	public boolean atualizar(Postagem postagem) {
-		if (this.postagemGerente.atualizar(postagem)) {
+	public boolean atualizar(PostagemDto postagemDto) {
+		if (this.postagemGerente.atualizar(postagemDto)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public boolean remover(Postagem postagem) {
-		if (this.postagemGerente.remover(postagem)) {
+	public boolean remover(PostagemDto postagemDto) {
+		if (this.postagemGerente.remover(postagemDto)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public List<Postagem> listarTodos() {
+	public List<PostagemDto> listarTodos() {
 		return this.postagemGerente.listarTodos();
 	}
 	
-	public List<Postagem> filtrarPostagemPorUsuario(Usuario usuario) {
-		return this.postagemGerente.filtrarPostagemPorUsuario(usuario);
+	public List<PostagemDto> filtrarPostagemPorUsuario(UsuarioDto usuarioDto) {
+		return this.postagemGerente.filtrarPostagemPorUsuario(usuarioDto);
 	}
 	
 //	public List<Postagem> filtrarPostagemPorLikeTitulo(String titulo) {
 //		 return this.postagemGerente.filtrarPostagemPorLikeTitulo(titulo);
 //	}
 //	
-	public List<Postagem> filtrarPostagemPorLikeUsuarioNome(String titulo) {
+	public List<PostagemDto> filtrarPostagemPorLikeUsuarioNome(String titulo) {
 		 return this.postagemGerente.filtrarPostagemPorLikeUsuarioNome(titulo);
 	}
 

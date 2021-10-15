@@ -1,6 +1,7 @@
 package view;
 
 import controller.UsuarioController;
+import dto.UsuarioDto;
 
 public class MainView {
 	
@@ -36,7 +37,10 @@ public class MainView {
 		utilidadesView.titulo("TELA LOGIN");
 		String email = utilidadesView.leia("Email:");
 		String senha = utilidadesView.leia("Senha:");
-		if (this.usuarioController.validaLogin(email, senha)) {
+		UsuarioDto usuarioDto = new UsuarioDto();
+		usuarioDto.setEmail(email);
+		usuarioDto.setSenha(senha);
+		if (this.usuarioController.validaLogin(usuarioDto)) {
 			this.postagemCRUD.setUsuario(this.usuarioController.getLogado());
 			if (this.usuarioController.ehAdmin()) {
 				menuAdmin();

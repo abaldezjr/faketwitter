@@ -2,20 +2,19 @@ package controller;
 
 import java.util.List;
 
-import model.entity.Usuario;
+import dto.UsuarioDto;
 import model.service.UsuarioService;
-import view.UsuarioCRUD;
 
 public class UsuarioController {
 
-	private UsuarioService usuarioGerente;
-	private Usuario logado = null;
+	private UsuarioService usuarioService;
+	private UsuarioDto logado = null;
 	
 	public UsuarioController() {
-		usuarioGerente = new UsuarioService();
+		usuarioService = new UsuarioService();
 	}
 	
-	public Usuario getLogado() {
+	public UsuarioDto getLogado() {
 		return logado;
 	}
 	
@@ -23,49 +22,46 @@ public class UsuarioController {
 		return "admin@gmail.com".equals(this.logado.getEmail());
 	}
 	
-	public boolean validaLogin(String email, String senha) {
-		if (!email.isEmpty() && !senha.isEmpty()) {
-			Usuario usuario = this.usuarioGerente.filtrarPorEqualsEmail(email);
-			if (usuario.getEmail().equals(email)
-					&& usuario.getSenha().equals(senha)) {
-				logado = usuario;
-				return true;
-			}
+	public boolean validaLogin(UsuarioDto usuarioDto) {
+		UsuarioDto uDto = this.usuarioService.validaLogin(usuarioDto);
+		if(uDto != null) {
+			logado = uDto;
+			return true;
 		}
-		return false;
+		return false;	
 	}
 	
-	public boolean adicionar(Usuario usuario) {
-		if (usuarioGerente.adicionar(usuario)) {
+	public boolean adicionar(UsuarioDto usuarioDto) {
+		if (this.usuarioService.adicionar(usuarioDto)) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean atualizar(Usuario usuario) {
-		if (usuarioGerente.atualizar(usuario)) {
+	public boolean atualizar(UsuarioDto usuarioDto) {
+		if (this.usuarioService.atualizar(usuarioDto)) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean remover(Usuario usuario) {
-		if (usuarioGerente.remover(usuario)) {
+	public boolean remover(UsuarioDto usuarioDto) {
+		if (this.usuarioService.remover(usuarioDto)) {
 			return true;
 		}
 		return false;
 	}
 
-	public List<Usuario> listarTodos() {
-		return usuarioGerente.listarTodos();
+	public List<UsuarioDto> listarTodos() {
+		return this.usuarioService.listarTodos();
 	}
 
-	public Usuario filtrarUsuarioPorId(long id) {
-		return this.usuarioGerente.filtrarPorId(id);
+	public UsuarioDto filtrarUsuarioPorId(Long id) {
+		return this.usuarioService.filtrarPorId(id);
 	}
 
-	public List<Usuario> filtrarPorLikeEmail(String email) {
-		return this.usuarioGerente.filtrarPorLikeEmail(email);
+	public List<UsuarioDto> filtrarPorLikeEmail(String email) {
+		return this.usuarioService.filtrarPorLikeEmail(email);
 	}
 
 }

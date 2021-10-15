@@ -2,6 +2,10 @@ package model.service;
 
 import java.util.List;
 
+import converter.PostagemConverter;
+import converter.UsuarioConverter;
+import dto.PostagemDto;
+import dto.UsuarioDto;
 import model.dao.PostagemDao;
 import model.entity.Postagem;
 import model.entity.Usuario;
@@ -9,41 +13,47 @@ import model.entity.Usuario;
 public class PostagemService {
 
 	private PostagemDao postagemDao;
+	private UsuarioConverter usuarioConverter;
+	private PostagemConverter postagemConverter;
 	
 	public PostagemService() {
 		postagemDao = new PostagemDao();
+		usuarioConverter = new UsuarioConverter();
+		postagemConverter = new PostagemConverter();
 	}
 
-	public boolean adicionar(Postagem postagem) {
-		return this.postagemDao.adicionar(postagem);
+	public boolean adicionar(PostagemDto postagemDto) {
+		return this.postagemDao.adicionar(postagemConverter.dtoToEntity(postagemDto));
 	}
 
-	public boolean atualizar(Postagem postagem) {
-		return this.postagemDao.atualizar(postagem);
+	public boolean atualizar(PostagemDto postagemDto) {
+		return this.postagemDao.atualizar(postagemConverter.dtoToEntity(postagemDto));
 	}
 
-	public boolean remover(Postagem postagem) {
-		return this.postagemDao.remover(postagem);
+	public boolean remover(PostagemDto postagemDto) {
+		return this.postagemDao.remover(postagemConverter.dtoToEntity(postagemDto));
 	}
 
-	public List<Postagem> listarTodos() {
-		return this.postagemDao.listarTodos();
+	public List<PostagemDto> listarTodos() {
+		return postagemConverter.entityToDto(this.postagemDao.listarTodos());
 	}
 
-	public Postagem filtrarPorId(long id) {
-		return this.postagemDao.filtrarPorId(id);
+	public PostagemDto filtrarPorId(long id) {
+		return postagemConverter.entityToDto(this.postagemDao.filtrarPorId(id));
 	}
 
-	public List<Postagem> filtrarPostagemPorUsuario(Usuario usuario) {
-		return this.postagemDao.filtrarPostagemPorUsuario(usuario);
+	public List<PostagemDto> filtrarPostagemPorUsuario(UsuarioDto usuarioDto) {
+		Usuario usuario = usuarioConverter.dtoToEntity(usuarioDto);
+		List<Postagem> postagens = this.postagemDao.filtrarPostagemPorUsuario(usuario);
+		return postagemConverter.entityToDto(postagens);
 	}
 
-	public List<Postagem> filtrarPostagemPorLikeTitulo(String titulo) {
-		return this.postagemDao.filtrarPostagemPorLikeTitulo(titulo);
+	public List<PostagemDto> filtrarPostagemPorLikeTitulo(String titulo) {
+		return postagemConverter.entityToDto(this.postagemDao.filtrarPostagemPorLikeTitulo(titulo));
 	}
 
-	public List<Postagem> filtrarPostagemPorLikeUsuarioNome(String nome) {
-		return this.postagemDao.filtrarPostagemPorLikeUsuarioNome(nome);
+	public List<PostagemDto> filtrarPostagemPorLikeUsuarioNome(String nome) {
+		return postagemConverter.entityToDto(this.postagemDao.filtrarPostagemPorLikeUsuarioNome(nome));
 	}
 	
 }
