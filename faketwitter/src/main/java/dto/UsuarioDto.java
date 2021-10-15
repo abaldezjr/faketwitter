@@ -11,10 +11,18 @@ public class UsuarioDto {
 		
 	}
 	
-	public UsuarioDto(Long id, String email, String nome) {
+	public UsuarioDto(Long id, String email, String senha, String nome) {
 		super();
 		this.setId(id);
 		this.setEmail(email);
+		this.setSenha(senha);
+		this.setNome(nome);
+	}
+	
+	public UsuarioDto(String email, String senha, String nome) {
+		super();
+		this.setEmail(email);
+		this.setSenha(senha);
 		this.setNome(nome);
 	}
 

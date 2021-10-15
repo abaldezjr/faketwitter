@@ -9,7 +9,7 @@ import model.entity.Usuario;
 public class UsuarioConverter {
 	
 	public UsuarioDto entityToDto(Usuario usuario) {
-		return new UsuarioDto(usuario.getId(),usuario.getEmail(),usuario.getNome());
+		return new UsuarioDto(usuario.getId(),usuario.getEmail(),usuario.getSenha(),usuario.getNome());
 	}
 	
 	public List<UsuarioDto> entityToDto(List<Usuario> usuarios){

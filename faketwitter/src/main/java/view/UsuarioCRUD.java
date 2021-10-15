@@ -46,10 +46,10 @@ public class UsuarioCRUD {
 
 	public void adicionar() {
 		utilidadesView.titulo("ADICIONAR USUARIO");
-		UsuarioDto usuarioDto = new UsuarioDto();
-		usuarioDto.setEmail(utilidadesView.leia("Email -> "));
-		usuarioDto.setSenha(utilidadesView.leia("Senha -> "));
-		usuarioDto.setNome(utilidadesView.leia("Nome -> "));
+		String email = utilidadesView.leia("Email -> ");
+		String senha = utilidadesView.leia("Senha -> ");
+		String nome = utilidadesView.leia("Nome -> ");
+		UsuarioDto usuarioDto = new UsuarioDto(email, senha, nome);
 		if (this.usuarioController.adicionar(usuarioDto)) {
 			System.out.println("Usuario adicionado com sucesso.");
 		} else {
